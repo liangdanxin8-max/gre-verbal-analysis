@@ -1,119 +1,184 @@
 # GRE Verbal Analysis
 
-AI-powered GRE Verbal mock exam analyzer. Scrapes exam results from gre.viplgw.cn, generates comprehensive per-question analysis with vocabulary breakdowns, mistake diagnosis, and methodology summaries.
+AI 驱动的 GRE Verbal 模考深度解析工具。自动抓取模考结果，逐题生成包含逻辑解析、词汇拆解、错误诊断的完整分析报告。
 
-Built as a [WorkBuddy Skill](https://www.codebuddy.cn) — an AI agent workflow that automates the entire analysis pipeline.
+基于 [WorkBuddy Skill](https://www.codebuddy.cn) 架构，也可在任意 AI 平台上使用。
 
-## Features
+---
 
-- **Full 24-question analysis**: Section 1 (11 Qs) + Section 3 (13 Qs)
-- **Every question analyzed deeply** — even correct ones (to catch lucky guesses)
-- **5 analysis sections per question**:
-  1. Sentence analysis with logic breakdown
-  2. Option-by-option explanation (all options, not just wrong ones)
-  3. Key vocabulary with memory tips and word roots
-  4. Mistake diagnosis with categorized error types
-  5. Methodology summary building a test-taking system
-- **HTML + Markdown reports**: Beautiful, print-friendly, mobile-responsive
-- **Skill-based architecture**: Reusable AI workflow with reference knowledge base
+## 快速开始（3 分钟上手）
 
-## Project Structure
+### 如果你是考生（想分析自己的模考）
+
+**输入**：你的 GRE 模考结果页面 URL（目前支持 gre.viplgw.cn，其他平台可手动输入题目）
+
+**输出**：一份完整的解析报告，包含：
+- 📊 分数总览与能力雷达图
+- 📝 逐题深度解析（每题 5 个模块）
+- 📚 词汇记忆卡片（含词根 + 记忆技巧）
+- 🧠 方法论总结（建立你的答题体系）
+
+**怎么做**：
+1. 考完模考，复制结果页面 URL
+2. 打开 WorkBuddy，说："帮我分析这份 GRE Verbal 模考"
+3. 粘贴 URL，等待 2-3 分钟
+4. 收到 `GRE_Verbal_解析报告.html`，用浏览器打开即可查看
+
+---
+
+## 输入格式（三种方式）
+
+| 方式 | 格式 | 说明 |
+|------|------|------|
+| **方式 1：URL**（推荐） | `https://gre.viplgw.cn/mockResult/...` | 自动抓取，最方便 |
+| **方式 2：手动输入题目** | 纯文本，直接粘贴题目 | 无需浏览器自动化 |
+| **方式 3：JSON 数据** | 见 `skill/references/data_schema.json` | 适合程序化调用 |
+
+> **支持的平台**：目前浏览器自动化仅支持 gre.viplgw.cn（雷哥GRE）。其他平台（考满分、微臣等）可以手动粘贴题目文本，同样能生成完整解析。
+
+---
+
+## 输出内容（每题 5 个解析模块）
+
+1. **句子逻辑拆解** — 分析句子结构、逻辑方向（正/负）、关键词定位
+2. **选项逐一讲解** — 不只讲正确答案，所有干扰项都分析为什么错
+3. **核心词汇注解** — 高频词 + 词根 + 记忆技巧（不是死记硬背）
+4. **错误诊断** — 如果做错了，归类错误类型（词汇盲区 / 逻辑方向反了 / 形近词混淆等）
+5. **方法论总结** — 这类题的标准解题流程，下次遇到怎么做
+
+---
+
+## 功能特性
+
+- **全部 24 题逐题解析**：Section 1（11 题）+ Section 3（13 题）
+- **做对的题也分析** — 捕捉"蒙对"的情况
+- **双格式报告**：HTML（精美排版，可打印）+ Markdown（纯文本，方便编辑）
+- **响应式设计**：手机/平板/电脑都能看
+- **可复用知识库**：高频词汇表、SE 同义词簇、RC 题型策略
+
+---
+
+## 项目结构
 
 ```
 gre-verbal-analysis/
-├── README.md                    # This file
-├── LICENSE                      # MIT License
-├── .gitignore                   # Git ignore rules
+├── README.md                    # 本文件
+├── LICENSE                      # MIT 开源协议
+├── .gitignore
 ├── skill/
-│   ├── SKILL.md                 # WorkBuddy Skill (4-phase workflow)
-│   ├── SYSTEM_PROMPT.md         # ⭐ Universal prompt — multi-platform use
-│   ├── scripts/                 # (Reserved for automation scripts)
+│   ├── SKILL.md                 # WorkBuddy Skill 定义（4 阶段工作流）
+│   ├── SYSTEM_PROMPT.md         # 通用 Prompt（可用于任意 AI 平台）
+│   ├── scripts/                 # （预留）自动化脚本
 │   ├── references/
-│   │   ├── gre_high_freq_words.md       # GRE high-frequency vocabulary
-│   │   ├── se_synonym_clusters.md       # SE synonym pair clusters
-│   │   ├── rc_question_types.md         # RC question type strategies
-│   │   └── data_schema.json             # Scraped data JSON schema
+│   │   ├── gre_high_freq_words.md       # GRE 高频词汇表
+│   │   ├── se_synonym_clusters.md       # SE 同义词对聚类
+│   │   ├── rc_question_types.md         # RC 题型策略
+│   │   └── data_schema.json             # 输入数据 JSON Schema
 │   └── assets/
-│       └── report_template.html         # HTML report template
+│       └── report_template.html         # HTML 报告模板
 └── samples/
-    └── sample_report.html       # Sample output report (anonymized)
+    └── sample_report.html       # 示例报告（匿名化）
 ```
 
-## How It Works
+---
 
-### Phase 1: Scrape
-Uses browser automation (CDP) to fetch all 24 Verbal questions from the mock result page.
+## 在 WorkBuddy 上使用
 
-### Phase 2: Analyze
-For each question, generates 5 mandatory analysis sections with logic parsing, vocabulary annotations, and error classification.
+1. 将 `skill/` 目录复制到 `~/.workbuddy/skills/gre-verbal-analysis/`
+2. 对 WorkBuddy 说：**"帮我分析 GRE Verbal 模考"**
+3. 粘贴你的模考结果 URL（gre.viplgw.cn）
+4. 确保浏览器已开启调试端口（见下方"浏览器配置"）
 
-### Phase 3: Report
-Produces both a detailed Markdown report and a styled HTML report with:
-- Score overview with ability bars
-- Color-coded question cards (red = wrong, green = correct)
-- Collapsible analysis sections
-- Vocabulary master grid with memory tips
-- Methodology summary cards
+### 浏览器配置（仅 URL 方式需要）
 
-### Phase 4: Deliver
-Sends the generated files to the user.
+如果用的是 URL 自动抓取方式，需要让浏览器开启调试端口：
 
-## Sample Output
+```bash
+# Chrome
+chrome --remote-debugging-port=9222
 
-See [`samples/sample_report.html`](samples/sample_report.html) for a full example report.
+# Edge
+msedge --remote-debugging-port=9222
+```
 
-## Question Types Supported
+---
 
-| Type | Description | Format |
-|------|-------------|--------|
-| **SC** | Single blank, choose 1 of 5 | Sentence with one blank |
-| **SE** | Sentence Equivalence, choose 2 synonyms from 6 | Sentence with one blank |
-| **TC2** | Text Completion, 2 blanks | Multiple option groups |
-| **TC3** | Text Completion, 3 blanks | Multiple option groups |
-| **RC** | Reading Comprehension | Various sub-types |
+## 在 Claude / OpenClaw / 任意 AI 平台上使用
 
-## Error Classification
+核心解析逻辑（Phase 2/3）完全平台无关，不依赖 WorkBuddy。
 
-The system categorizes mistakes into types:
-- Vocabulary gap (unknown key words)
-- Wrong logic direction (positive/negative reversed)
-- Look-alike confusion (e.g., comely vs comic)
-- Unsupported inference (RC detail questions)
-- Speed error (too fast, likely guessing)
-- Blank answer (free points lost)
-- Non-synonymous SE pair (chose two words that aren't synonyms)
-- Reversed "unlike" logic
+**步骤**：
+1. 打开你的 AI 平台（Claude、OpenClaw、ChatGPT 等）
+2. 将 `skill/SYSTEM_PROMPT.md` 的内容作为 **System Prompt** 粘贴进去
+3. 提供题目数据（URL / 手动输入 / JSON 均可）
+4. AI 会按照同样的标准输出完整解析报告
 
-## Tech Stack
+---
 
-- **AI Agent**: WorkBuddy Skill (LLM-driven workflow)
-- **Browser Automation**: CDP (Chrome DevTools Protocol) via agent-browser
-- **Output**: Static HTML + Markdown (no server required)
-- **Styling**: Pure CSS with CSS variables, responsive design
+## 题型支持
 
-## Setup as WorkBuddy Skill
+| 题型代码 | 全称 | 格式 |
+|---------|------|------|
+| **SC** | Single Choice | 单空，5 选 1 |
+| **SE** | Sentence Equivalence | 单空，6 选 2（两个同义词） |
+| **TC2** | Text Completion (2 blanks) | 两空，每组多选 |
+| **TC3** | Text Completion (3 blanks) | 三空，每组多选 |
+| **RC** | Reading Comprehension | 阅读理解，含多种子题型 |
 
-1. Copy `skill/` directory to `~/.workbuddy/skills/gre-verbal-analysis/`
-2. Trigger by saying "帮我分析GRE Verbal模考" or providing a gre.viplgw.cn URL
-3. Ensure Chrome/Edge is running with `--remote-debugging-port=9222`
+---
 
-## Multi-Platform Usage
+## 错误类型分类
 
-This skill's core analysis logic (Phase 2/3) is platform-independent. Use it on any AI platform.
+系统会将每道错题归类，帮助你发现规律：
 
-### WorkBuddy Users
-Copy `skill/` to `~/.workbuddy/skills/gre-verbal-analysis/`. Trigger with: "帮我分析GRE Verbal模考" or paste a gre.viplgw.cn URL.
+| 错误类型 | 说明 |
+|---------|------|
+| Vocabulary gap | 关键词不认识 |
+| Wrong logic direction | 逻辑方向搞反（正/负） |
+| Look-alike confusion | 形近词混淆（如 comely vs comic） |
+| Unsupported inference | RC 细节题做了无根据的推断 |
+| Speed error | 做得太快，大概率是蒙的 |
+| Blank answer | 空着没选，白白丢分 |
+| Non-synonymous SE pair | SE 选了两个不是同义词的选项 |
+| Reversed "unlike" logic | "unlike" 类题目逻辑方向反了 |
 
-### Claude / OpenClaw / Other LLM Users
-1. Copy `skill/SYSTEM_PROMPT.md` content as your system prompt
-2. Provide question data in any supported format (URL / JSON / screenshot)
-3. The AI will output a complete analysis report following the same standards
+---
 
-### Without Browser Automation
-Paste question text manually. Use JSON format (schema in `skill/references/data_schema.json`).
+## 示例报告
+
+查看 [`samples/sample_report.html`](samples/sample_report.html) 了解报告的实际效果。
+
+---
+
+## 技术栈
+
+- **AI 工作流**：WorkBuddy Skill（LLM 驱动的多阶段流程）
+- **浏览器自动化**：CDP（Chrome DevTools Protocol）
+- **输出格式**：静态 HTML + Markdown（无需服务器）
+- **样式**：纯 CSS 变量，响应式设计
+
+---
+
+## 常见问题
+
+**Q：只能用于 gre.viplgw.cn 吗？**
+A：浏览器自动抓取目前只支持 gre.viplgw.cn。但你可以手动粘贴任何平台的题目文本，解析质量完全相同。
+
+**Q：报告是中文还是英文？**
+A：报告以中文为主，方便中国考生阅读。题目原文和词汇保持英文。
+
+**Q：需要联网吗？**
+A：首次抓取需要联网访问模考平台。生成解析报告本身不需要联网。
+
+**Q：我的模考数据会被上传吗？**
+A：如果你使用 WorkBuddy 本地版本，所有数据只在本地处理，不会上传。
 
 ---
 
 ## License
 
-MIT
+MIT —— 自由使用、修改、分发。
+
+---
+
+**作者**：Danxin Liang · GitHub: [@liangdanxin8-max](https://github.com/liangdanxin8-max)
