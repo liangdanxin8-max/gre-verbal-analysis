@@ -25,7 +25,8 @@ gre-verbal-analysis/
 ├── LICENSE                      # MIT License
 ├── .gitignore                   # Git ignore rules
 ├── skill/
-│   ├── SKILL.md                 # Core workflow definition (4 phases)
+│   ├── SKILL.md                 # WorkBuddy Skill (4-phase workflow)
+│   ├── SYSTEM_PROMPT.md         # ⭐ Universal prompt — multi-platform use
 │   ├── scripts/                 # (Reserved for automation scripts)
 │   ├── references/
 │   │   ├── gre_high_freq_words.md       # GRE high-frequency vocabulary
@@ -95,6 +96,23 @@ The system categorizes mistakes into types:
 1. Copy `skill/` directory to `~/.workbuddy/skills/gre-verbal-analysis/`
 2. Trigger by saying "帮我分析GRE Verbal模考" or providing a gre.viplgw.cn URL
 3. Ensure Chrome/Edge is running with `--remote-debugging-port=9222`
+
+## Multi-Platform Usage
+
+This skill's core analysis logic (Phase 2/3) is platform-independent. Use it on any AI platform.
+
+### WorkBuddy Users
+Copy `skill/` to `~/.workbuddy/skills/gre-verbal-analysis/`. Trigger with: "帮我分析GRE Verbal模考" or paste a gre.viplgw.cn URL.
+
+### Claude / OpenClaw / Other LLM Users
+1. Copy `skill/SYSTEM_PROMPT.md` content as your system prompt
+2. Provide question data in any supported format (URL / JSON / screenshot)
+3. The AI will output a complete analysis report following the same standards
+
+### Without Browser Automation
+Paste question text manually. Use JSON format (schema in `skill/references/data_schema.json`).
+
+---
 
 ## License
 

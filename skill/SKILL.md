@@ -25,6 +25,23 @@ Trigger on phrases like:
 - "做GRE做题体系"
 - Any request involving `gre.viplgw.cn/mockResult` URL + Verbal analysis
 
+## 多平台使用说明
+
+本 Skill 的核心分析逻辑（Phase 2/3）与平台无关，可在任何 AI 平台上使用。
+
+### WorkBuddy 用户
+直接使用本 Skill，Phase 1 和 Phase 4 会自动调用 WorkBuddy 工具。
+
+### Claude / OpenClaw / 其他 LLM 用户
+1. 将 `SYSTEM_PROMPT.md` 的内容作为 system prompt 输入
+2. 按提示提供题目数据（支持 URL / JSON / 截图粘贴三种格式）
+3. AI 会按统一标准输出完整解析报告
+
+### 无浏览器自动化能力时
+手动粘贴题目数据，格式参考 `references/data_schema.json`。
+
+---
+
 ## Overview
 
 The skill executes a 4-phase workflow:
@@ -36,7 +53,11 @@ Phase 3: Report — Generate both MD and HTML reports
 Phase 4: Deliver — Use deliver_attachments to send files to user
 ```
 
+---
+
 ## Phase 1: Scrape Questions
+
+> **[WorkBuddy 专用]** 如无浏览器自动化能力，见 `SYSTEM_PROMPT.md` 的输入格式说明。
 
 ### Prerequisites
 
@@ -77,6 +98,8 @@ To discover section IDs for a new exam:
 agent-browser --cdp 9222 open "https://gre.viplgw.cn/mockResult/{examId}-{sectionId}-0-{questionId}.html#question"
 agent-browser --cdp 9222 eval "document.querySelector('.timu_title_top')?.innerText || ''"
 agent-browser --cdp 9222 eval "document.querySelector('.tiku_topic_handle')?.innerText || ''"
+# For RC questions, also extract the highlighted sentence (if present)
+agent-browser --cdp 9222 eval "document.querySelector('.timu_title_top span[style*=\"background\"]')?.innerText || ''"
 ```
 
 **Critical**: Use `open` (not click) to navigate directly to each question URL. Click-based navigation fails because ref IDs change after page refresh.
@@ -85,8 +108,17 @@ agent-browser --cdp 9222 eval "document.querySelector('.tiku_topic_handle')?.inn
 
 From `.timu_title_top`: full question text + all options
 From `.tiku_topic_handle`: correct answer, user's answer, time spent
+From `.timu_title_top span[style*="background"]`: **highlighted sentence** (RC questions only, see note below)
+
+**⚠️ RC 高亮句提取（重要）**：
+- CSS 选择器：`.timu_title_top span[style*="background"]`
+- 用 `agent-browser --cdp 9222 eval "document.querySelector('.timu_title_top span[style*=\"background\"]')?.innerText || ''"` 提取
+- **绝对不能猜测**高亮句内容！如果选择器返回空，标注 `[高亮句待确认]` 并说明原因
+- 参考：`references/rc_question_types.md` 中"高亮句推断题"章节
 
 Store as structured JSON array (reference: `references/data_schema.json`).
+
+---
 
 ## Phase 2: Analyze Each Question
 
@@ -176,6 +208,9 @@ Further classify RC questions:
 - 目的题 (in order to / primary purpose)
 - 多选题 (Select all that apply)
 - 类比题 (analogy)
+- 高亮句推断题 (Highlighted sentence reference)
+
+---
 
 ## Phase 3: Generate Reports
 
@@ -222,12 +257,18 @@ The HTML report should have:
 - Collapsible sections for each analysis part
 - Print-friendly styling
 
+---
+
 ## Phase 4: Deliver
+
+> **[WorkBuddy 专用]** 其他平台见 `SYSTEM_PROMPT.md`。
 
 After both files are generated:
 1. Use `deliver_attachments` to send both `.md` and `.html` files to user
 2. Use `preview_url` to show the HTML report in the built-in browser
 3. Append a brief note to working memory (memory/YYYY-MM-DD.md)
+
+---
 
 ## Important Notes
 
@@ -249,7 +290,8 @@ After both files are generated:
 2. **推断题 (implies/suggests)**: Find the closest paraphrase of the text. Choose the most conservative inference.
 3. **主旨题**: Summarize in one sentence. Eliminate "too broad" and "too specific" options.
 4. **多选题**: Check EVERY option against the text. "According to the passage" = only what's in the text.
-5. **Never leave a question blank**: Always guess if unsure.
+5. **高亮句推断题**: MUST extract highlighted sentence from DOM (`.timu_title_top span[style*="background"]`). Never guess.
+6. **Never leave a question blank**: Always guess if unsure.
 
 ### SE Question Principles
 
@@ -264,6 +306,8 @@ After both files are generated:
 2. Determine direction (positive/negative) for each blank
 3. The three blanks must form a coherent logical chain
 4. Use known blanks to verify unknown blanks
+
+---
 
 ## Reference Files
 

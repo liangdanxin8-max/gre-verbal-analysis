@@ -130,7 +130,43 @@
 
 ---
 
-### 7. 排除法通用技巧
+### 7. 高亮句推断题（Highlight Reference）
+
+**提问方式**：
+- The author implies which of the following about the challenge referred to in the highlighted sentence?
+- Which of the following is suggested about X referred to in the highlighted sentence?
+
+**黄金法则**：
+> **必须从页面 DOM 精确提取高亮句，绝对不能猜测！**
+
+**提取方法（雷哥网站 gre.viplgw.cn）**：
+- CSS 选择器：`.timu_title_top span[style*="background"]`
+- 或直接搜索带 `style="background-color: #FFFF00"` 的 `<span>` 标签
+- 提取到的文本就是高亮句，一字不差
+
+**解题步骤**：
+1. 精确提取高亮句原文（如果无法提取，标注 `[高亮句待确认]`）
+2. 提取高亮句的**核心信息**，忽略修饰语和插入语
+3. 找到与高亮句核心信息**最保守、最直接**的同义改写
+4. 排除文章其他部分的信息（高亮句题只关心高亮句本身）
+
+**示例（S1-Q5）**：
+- 高亮句：*"Even sympathetic critics fail to acknowledge the extent to which Wharton challenged contemporary mores."*
+- 核心信息：批评家没认识到 Wharton 对道德规范的挑战的程度
+- 正确答案：(E) It spanned all or nearly all of Wharton's writing career
+  - 依据：高亮句所在的上下文提到 "between her early novel (1905) and her last novel (1938)"
+- 错误做法：从整篇文章随便找信息，忽视高亮句的精确内容
+
+**常见陷阱**：
+| 陷阱 | 示例 | 对策 |
+|------|------|------|
+| 用文章其他部分推断 | 看到"challenged social norms"就选相关选项 | 只看高亮句 + 紧邻上下文 |
+| 猜测高亮句内容 | 没提取 DOM，自己猜高亮句是什么 | 必须提取，不能猜 |
+| 忽略高亮句修饰语 | 只看主干，漏掉"extent to which" | 核心信息 + 修饰语都要考虑 |
+
+---
+
+### 8. 排除法通用技巧
 
 ```
 Step 1: 找关键词定位原文

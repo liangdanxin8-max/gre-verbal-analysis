@@ -11,6 +11,7 @@
     "correctAnswer": "string (e.g., 'D' or '(A)(F)')",
     "isCorrect": "boolean",
     "timeSpent": "string (e.g., '54s' or '1m23s')",
+    "highlightedSentence": "string (optional, RC题高亮句，从 span[style*='background'] 提取)",
     "rawHtml": "string (optional, full page HTML for reference)"
   },
   "type_codes": {
@@ -24,6 +25,7 @@
     "SE questions have 6 options, need 2 correct answers that are synonyms",
     "TC questions have blank1/blank2/blank3 in separate option groups",
     "RC questions may have sub-questions (same passage, multiple Qs)",
+    "RC highlighted sentence: extract from .timu_title_top span[style*='background']",
     "timeSpent format: 'XXs' or 'XmYYs'"
   ]
 }
